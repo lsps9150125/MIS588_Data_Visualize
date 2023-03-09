@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!-- 
+    M114020061 林語婕
+    M103040086 游辰生
+-->
+<html>
+<meta charset="utf-8">
+<head>
+    <!-- load D3 -->
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+    <div id="my_dataviz"></div>
+</body>
+
+<script>
+    const margin = { top: 30, right: 30, bottom: 70, left:60 },
+        width = 460 - margin.left - margin.right,
+        height = 460 - margin.top - margin.bottom;
+
+    // append the svg object to the body of page
+    const svg = d3.select("#my_dataviz")
+        .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+            .attr("transform", `translate(${margin.left}, ${margin.bottom})`);
+
+    // phrase the Data
+    d3.csv("https://raw.githubusercontent.com/lsps9150125/Vonoroi/main/data1.csv")
+        .then( function(data) {
+            
+        // X axis
+        const x = d3.scaleBand()
+            .range([0, width])
+            .domain(data.map(d => d.city))
+            .padding(10.2);
+        
+        svg.append("g")
+            .attr("transform", `translate(0 ,0)`)
+            .call(d3.axisTop(x))
+            .selectAll("text")
+                .attr("transform", `translate(10,-5)rotate(-45)`)
+                .style("text-anchor", "start");
+
+        // Y axis
+        const y = d3.scaleLinear()
+            .domain([1000, 0])
+            .range([height, 0]);
+
+
+        svg.append("g")
+            .call(d3.axisLeft(y));
+
+        // Bar
+        svg.selectAll("mybar")
+            .data(data)
+            .join("rect")
+                .attr("x", d => x(d.city))
+                .attr("y", d => 0.5)
+                .attr("width", x.bandwidth())
+                .attr("height", d => y(d.profit))
+                .attr("fill", "#69b3a2");
+    })
+</script>
+</html>
